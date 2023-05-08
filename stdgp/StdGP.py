@@ -37,6 +37,9 @@ class StdGP:
 	max_depth = None
 	max_generation = None
 	tournament_size = None
+	sp = None
+	sf = None
+	switch = None
 	elitism_size = None
 
 	model_name = None 
@@ -72,7 +75,7 @@ class StdGP:
 
 
 	def __init__(self, operators=[("+",2),("-",2),("*",2),("/",2)], max_initial_depth = 6, population_size = 500, 
-		max_generation = 100, tournament_size = 5, elitism_size = 1, max_depth = 17, 
+		max_generation = 100, tournament_size = 5, sp = 3, sf = 7, switch = False, elitism_size = 1, max_depth = 17, 
 		threads=1, random_state = 42, verbose = True, model_name="SimpleThresholdClassifier", fitnessType="Accuracy"):
 
 		if sum( [0 if op in [("+",2),("-",2),("*",2),("/",2)] else 0 for op in operators ] ) > 0:
@@ -89,6 +92,9 @@ class StdGP:
 		self.max_depth = max_depth
 		self.max_generation = max_generation
 		self.tournament_size = tournament_size
+		self.sp = sp
+		self.sf = sf
+		self.switch = switch
 		self.elitism_size = elitism_size
 
 		self.model_name = model_name
@@ -177,20 +183,23 @@ class StdGP:
 
 
 	def fit(self,Tr_x, Tr_y, Te_x = None, Te_y = None):
-		if self.verbose:
-			print("  > Parameters")
-			print("    > Random State:       "+str(self.random_state))
-			print("    > Operators:          "+str(self.operators))
-			print("    > Population Size:    "+str(self.population_size))
-			print("    > Max Generation:     "+str(self.max_generation))
-			print("    > Tournament Size:    "+str(self.tournament_size))
-			print("    > Elitism Size:       "+str(self.elitism_size))
-			print("    > Max Initial Depth:  "+str(self.max_initial_depth))
-			print("    > Max Depth:          "+str(self.max_depth))
-			print("    > Wrapped Model:      "+self.model_name)
-			print("    > Fitness Type:       "+self.fitnessType)
-			print("    > Threads:            "+str(self.threads))
-			print()
+		# if self.verbose:
+		# 	print("  > Parameters")
+		# 	print("    > Random State:       "+str(self.random_state))
+		# 	print("    > Operators:          "+str(self.operators))
+		# 	print("    > Population Size:    "+str(self.population_size))
+		# 	print("    > Max Generation:     "+str(self.max_generation))
+		# 	print("    > Tournament Size:    "+str(self.tournament_size))
+		# 	print("    > Sp:                 "+str(self.sp))
+		# 	print("    > Sf:                 "+str(self.sf))
+		# 	print("    > Switch:             "+str(self.switch))
+		# 	print("    > Elitism Size:       "+str(self.elitism_size))
+		# 	print("    > Max Initial Depth:  "+str(self.max_initial_depth))
+		# 	print("    > Max Depth:          "+str(self.max_depth))
+		# 	print("    > Wrapped Model:      "+self.model_name)
+		# 	print("    > Fitness Type:       "+self.fitnessType)
+		# 	print("    > Threads:            "+str(self.threads))
+		# 	print()
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
@@ -201,6 +210,7 @@ class StdGP:
 
 		self.population = []
 
+		# Create initial population of Individuals
 		while len(self.population) < self.population_size:
 			ind = Individual(self.operators, self.terminals, self.max_depth, self.model_name, self.fitnessType)
 			ind.create(self.rng)
@@ -301,7 +311,7 @@ class StdGP:
 			[ ind.fit(self.Tr_x, self.Tr_y) for ind in self.population]
 			[ ind.getFitness() for ind in self.population ]
 
-		# Sort the population from best to worse
+		# Sort the population from best to worse in terms of fitness
 		self.population.sort(reverse=True)
 
 
@@ -313,7 +323,7 @@ class StdGP:
 		newPopulation = []
 		newPopulation.extend(getElite(self.population, self.elitism_size))
 		while len(newPopulation) < self.population_size:
-			offspring = getOffspring(self.rng, self.population, self.tournament_size)
+			offspring = getOffspring(self.rng, self.population, self.tournament_size, self.sp, self.sf, self.switch)
 			offspring = discardDeep(offspring, self.max_depth)
 			newPopulation.extend(offspring)
 		self.population = newPopulation[:self.population_size]
