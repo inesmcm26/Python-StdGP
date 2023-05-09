@@ -24,22 +24,29 @@ def tournament(rng, population, n):
 
 
 def double_tournament(rng, population, tournament_size, sp = 3, sf = 7, switch = False):
-	"""
-	Selects 'tournament_size' Individuals for the first tournment until selecting
-	'sf' individuals if 'switch' is True OR 'sp' inidividuals if 'switch' is False.
+	'''
+	Runs a double tournament selection process to select the best Individual from a population.
 
-	Then, selects 'sp' individuals out of the 'sf' previously selected ones
-	OR
-	selects 'sf' individuals out of the 'sp' previously selected ones
-
-	From those last Individuals, return the single best Individual
+	The double tournament consists of two rounds of tournament selection, where the first round selects 
+	'sf' individuals based on fitness (when switch = False) or 'sp' individuals based on size (when switch = True),
+	and the second round selects the best individual among the winners of the first round, but using the
+	opposite criteria (i.e., size when fitness was used in the first round, and vice versa). The purpose
+	of the switch parameter is to alternate the criteria used in the first round between size and fitness.
 
 	Parameters:
-	population (list): A list of Individuals
-	tournament_size: size of first tournament selection
-	sp: size of parsimony selection
-	sf: size of fitness selection
-	"""
+	- rng (numpy.random.Generator): A random number generator.
+	- population (list): A list of Individuals, sorted from best to worse according to the first criterion
+		used in the first round of the double tournament (i.e., fitness if switch = False, size if switch = True).
+	- tournament_size (int): The size of each tournament in the first round.
+	- sp (int): The number of Individuals selected in the first round based on size (when switch = True) or
+		the second tournament size (when switch = False).
+	- sf (int): The number of Individuals selected in the first round based on fitness (when switch = False) or
+		the second tournament size (when switch = True).
+	- switch (bool): A flag to switch between using size or fitness in the first round of the double tournament.
+
+	Returns:
+	The best Individual selected by the double tournament
+	'''
 
 	# Create a list to store the winners of the first tournament
 	first_tourn_winners = []
