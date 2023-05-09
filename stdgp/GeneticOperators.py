@@ -23,7 +23,7 @@ def tournament(rng, population, n):
 	return population[min(candidates)]
 
 
-def double_tournament(rng, population, tournament_size, sp = 3, sf = 7, switch = False):
+def double_tournament(rng, population, tournament_size, sp, sf, switch):
 	'''
 	Runs a double tournament selection process to select the best Individual from a population.
 
@@ -143,9 +143,6 @@ def STXO(rng, population, tournament_size, sp, sf, switch):
 	Parameters:
 	population (list): A list of Individuals, sorted from best to worse.
 	'''
-
-	print('--------- DOING CROSSOVER --------------')
-
 	ind1 = double_tournament(rng, population, tournament_size, sp, sf, switch)
 	ind2 = double_tournament(rng, population, tournament_size, sp, sf, switch)
 
