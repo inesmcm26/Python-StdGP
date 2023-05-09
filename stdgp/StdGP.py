@@ -183,23 +183,23 @@ class StdGP:
 
 
 	def fit(self,Tr_x, Tr_y, Te_x = None, Te_y = None):
-		# if self.verbose:
-		# 	print("  > Parameters")
-		# 	print("    > Random State:       "+str(self.random_state))
-		# 	print("    > Operators:          "+str(self.operators))
-		# 	print("    > Population Size:    "+str(self.population_size))
-		# 	print("    > Max Generation:     "+str(self.max_generation))
-		# 	print("    > Tournament Size:    "+str(self.tournament_size))
-		# 	print("    > Sp:                 "+str(self.sp))
-		# 	print("    > Sf:                 "+str(self.sf))
-		# 	print("    > Switch:             "+str(self.switch))
-		# 	print("    > Elitism Size:       "+str(self.elitism_size))
-		# 	print("    > Max Initial Depth:  "+str(self.max_initial_depth))
-		# 	print("    > Max Depth:          "+str(self.max_depth))
-		# 	print("    > Wrapped Model:      "+self.model_name)
-		# 	print("    > Fitness Type:       "+self.fitnessType)
-		# 	print("    > Threads:            "+str(self.threads))
-		# 	print()
+		if self.verbose:
+			print("  > Parameters")
+			print("    > Random State:       "+str(self.random_state))
+			print("    > Operators:          "+str(self.operators))
+			print("    > Population Size:    "+str(self.population_size))
+			print("    > Max Generation:     "+str(self.max_generation))
+			print("    > Tournament Size:    "+str(self.tournament_size))
+			print("    > Sp:                 "+str(self.sp))
+			print("    > Sf:                 "+str(self.sf))
+			print("    > Switch:             "+str(self.switch))
+			print("    > Elitism Size:       "+str(self.elitism_size))
+			print("    > Max Initial Depth:  "+str(self.max_initial_depth))
+			print("    > Max Depth:          "+str(self.max_depth))
+			print("    > Wrapped Model:      "+self.model_name)
+			print("    > Fitness Type:       "+self.fitnessType)
+			print("    > Threads:            "+str(self.threads))
+			print()
 
 		self.Tr_x = Tr_x
 		self.Tr_y = Tr_y
