@@ -20,18 +20,10 @@ def tournament(rng, population, n):
 	'''
 	candidates = [rng.randint(0,len(population)-1) for i in range(n)]
 
-	print('SELECTED INDIVIDUALS FOR FITNESS TOURNAMENT:')
-	for idx in candidates:
-		print(str(population[idx]))
-		print('Fitness: ', population[idx].fitness)
-
-	print('SELECTED INDIVIDUAL ON FITNESS TOURNAMENT:')
-	print(str(population[min(candidates)]))
-
 	return population[min(candidates)]
 
 
-def double_tournament(rng, population, tournament_size, sp=3, sf=7, switch = False):
+def double_tournament(rng, population, tournament_size, sp = 3, sf = 7, switch = False):
 	"""
 	Selects 'tournament_size' Individuals for the first tournment until selecting
 	'sf' individuals if 'switch' is True OR 'sp' inidividuals if 'switch' is False.
@@ -44,78 +36,53 @@ def double_tournament(rng, population, tournament_size, sp=3, sf=7, switch = Fal
 
 	Parameters:
 	population (list): A list of Individuals
-	n: size of first tournament selection
+	tournament_size: size of first tournament selection
 	sp: size of parsimony selection
 	sf: size of fitness selection
 	"""
 
-	# TODO report: we can say that we decided to recycle the previous tournament function
-	# It is easy to order the population by fitness because of the sort method
-	# and then call the tournament function with the ordered population, just as what was done before
+	# Create a list to store the winners of the first tournament
+	first_tourn_winners = []
 
-	# I tjink we can also order the population based on size and then call 'tournament' function
-	# with the ordered population, just to be consistent!
-
-	# TODO: see edge cases (sp == sf)
-
-	print('------------ DOUBLE TOURNAMENT SELECTION ------------')
-
-	for ind in population:
-		print('Individual: ', str(ind))
-		print('Fitness: ', ind.fitness)
-
-	fstournament = []
-
+	# First tournament based on size and second based on fitness
 	if switch:
 		if sp >= sf:
-			
-			# Run the first tournament until selecting 'sp' individuals
-			for _ in range(sp):
-				# Select 'tournament_size' random Individuals for the first tournament
-				candidates = [population[rng.randint(0, len(population) - 1)] for _ in range (tournament_size)]
-				
-				# Save the best Individual (smalest size) from the first tournament
-				fstournament.append(min(candidates, key = lambda x: x.getSize()))
-			
-			# Order by fitness
-			fstournament.sort(reverse = True)
 
-			# Return the best Individual (best fitness) from the second tournament
-			return tournament(rng, fstournament, sf)
+			# Sort Individuals in population by size
+			population.sort(key = lambda x: x.getSize())
+			
+			# Run first tournament with size 'tournament_size'
+			# until selecting 'sp' winning individuals
+			for _ in range(sp):
+				first_tourn_winners.append(tournament(rng, population, tournament_size))
+
+			
+			# Order winners by fitness
+			first_tourn_winners.sort(reverse = True)
+
+			# Run second tournament with size 'sf' and return the best Individual (best fitness)
+			return tournament(rng, first_tourn_winners, sf)
 		else:
 			raise Exception('sp must be greater or equal than sf when switch = True')
+	
+	# First tournament based on fitness and second based on size
 	else:
 		if sf >= sp:
 			
-			# Sort Individuals by fitness
+			# Sort Individuals in population by fitness
 			population.sort(reverse = True)
 
+			# Run the first tournament with size 'tournament_size'
+			# until selecting 'sf' winning individuals
 			for _ in range(sf):
-				# Get the best individual from a first tournament based on fitness and store it
-				fstournament.append(tournament(rng, population, tournament_size))
+				first_tourn_winners.append(tournament(rng, population, tournament_size))
 			
-			print()
-			print('SELECTED INDIVIDUALS IN THE FIRST PHASE OF THE TOURNAMENT:')
-			for ind in fstournament:
-				print('Individual: ', str(ind))
-				print('Fitness : ', ind.fitness)
-			
-			# Select sp random Individuals from the sf previously selected ones
-			# to compete on the second tournament
-			candidates = [fstournament[rng.randint(0,len(fstournament) - 1)] for _ in range(sp)]
+			# Order winners by size
+			first_tourn_winners.sort(key = lambda x: x.getSize())
 
-			print()
-			print('SELECTED INDIVIDUALS FOR THE PASIMONY TOURNAMENT:')
-			for ind in candidates:
-				print(str(ind))
-				print('Size: ', ind.getSize())
-			
-			print()
-			print('SELECTED INDIVIDUAL ON PASIMONY TOURNAMENT:')
-			print(str(min(candidates, key=lambda x: x.getSize())))
+			# Run second tournament with size 'sp' and return the best Individual (best fitness)
+			return tournament(rng, first_tourn_winners, sp)
 
-			# Return the Individual with the best size (minimum size)
-			return min(candidates, key=lambda x: x.getSize())
 		else:
 			raise Exception('sf must be greater or equal than sp when switch = False')
 
